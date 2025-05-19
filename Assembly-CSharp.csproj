@@ -53,6 +53,7 @@
     <Compile Include="Assets/StartScreenManager.cs" />
     <Compile Include="Assets/PlayerInputActions.cs" />
     <Compile Include="Assets/DropSpawner.cs" />
+    <Compile Include="Assets/MusicManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets/TextMesh Pro/Shaders/TMPro.cginc" />

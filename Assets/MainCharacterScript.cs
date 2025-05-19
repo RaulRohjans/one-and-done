@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -6,6 +7,7 @@ public class MainCharacterScript : MonoBehaviour
     public Rigidbody2D rb;
     public Transform groundCheck;
     public LayerMask groundLayer;
+    public TextMeshProUGUI carrotCounter;
 
     // Player sprites
     public SpriteRenderer spriteRenderer;
@@ -14,7 +16,6 @@ public class MainCharacterScript : MonoBehaviour
     // Play state
     enum PlayerState { Idle, Jumping, Falling }
     PlayerState state = PlayerState.Idle;
-    Rigidbody2D.SlideMovement SlideMovement = new Rigidbody2D.SlideMovement();
 
     // Controls variables
     public PlayerInputActions controls;
@@ -30,6 +31,9 @@ public class MainCharacterScript : MonoBehaviour
     private bool canDoubleJump = false;
     public Sprite shieldIcon, doubleJumpIcon;
     public UnityEngine.UI.Image activeEffectIcon;
+    private int score = 0;
+
+    private StartScreenManager screenManager;
 
     private void Awake()
     {
@@ -39,7 +43,7 @@ public class MainCharacterScript : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        screenManager = FindFirstObjectByType<StartScreenManager>();
     }
 
     // Update is called once per frame
@@ -142,21 +146,29 @@ public class MainCharacterScript : MonoBehaviour
         activeEffectIcon.color = c;
     }
 
+    private void IncrementGameScore()
+    {
+        score++;
+
+        // This should not be a hardcoded score limit
+        // again these should be separated texts but for the sake
+        // of simplicity I'll do it like this
+        carrotCounter.text = $"{score.ToString("D2")} / 50";
+    }
+
     public void Pickup(Drop drop)
     {
         switch (drop.type)
         {
             case DropType.Carrot:
-                // Increase score (you can add a score system)
+                IncrementGameScore();
+
+                if (score >= 50) screenManager.ShowStartScreen(GameState.Complete);
                 break;
 
             case DropType.EvilCarrot:
                 if (hasShield) ClearPickups();
-                else
-                {
-                    // Game over logic here
-                    Debug.Log("You died!");
-                }
+                else screenManager.ShowStartScreen(GameState.Over);
                 break;
 
             case DropType.Shield:

@@ -1,35 +1,56 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
+
+public enum GameState
+{
+    ToStart,
+    Started,
+    Over,
+    Complete
+}
 
 public class StartScreenManager : MonoBehaviour
 {
     public GameObject startScreenPanel;
-    public TMPro.TextMeshProUGUI pressSpaceText;
+    public TextMeshProUGUI pressSpaceText, mainMessageText, gameOverMessageText, gameCompleteMessageText;
     public CanvasGroup panelCanvasGroup;
 
-    private bool gameStarted = false;
+    private GameState gameState = GameState.ToStart;
+    private MusicManager musicManager;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        // When the game starts, we want to freeze it until player
-        // presses space
-        Time.timeScale = 0f;
-        startScreenPanel.SetActive(true);
-        panelCanvasGroup.alpha = 1f;
+        musicManager = FindFirstObjectByType<MusicManager>();
+
+        ShowStartScreen(GameState.ToStart);
     }
 
     // Update is called once per frame    
     void Update()
     {
-        if (gameStarted) return;
+        if (gameState == GameState.Started) return;
+
+        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            // Restart game if gameover or complete, otherwise just fade out
+            if (gameState != GameState.ToStart)
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            else StartCoroutine(FadeAndStart());
+        }
 
         BlinkSpaceText();
+    }
 
-        // When the user presses SPACE we can go with a nice fade out
-        // animation to make it smoother
-        if (Keyboard.current.spaceKey.wasPressedThisFrame)
-            StartCoroutine(FadeAndStart());
+    private void SetTextVisibility(TextMeshProUGUI text, bool isVisible)
+    {
+        Color c = pressSpaceText.color;
+        c.a = isVisible ? 1f : 0f;
+        pressSpaceText.color = c;
+
+        text.color = c;
     }
 
     private void BlinkSpaceText()
@@ -45,9 +66,52 @@ public class StartScreenManager : MonoBehaviour
         pressSpaceText.color = c;
     }
 
+    public void ShowStartScreen(GameState state)
+    {
+        gameState = state;
+
+        // This here freezes game execution
+        Time.timeScale = 0f;
+        startScreenPanel.SetActive(true);
+        panelCanvasGroup.alpha = 1f;
+
+        if (gameState == GameState.Over)
+        {
+            SetTextVisibility(mainMessageText, false);
+            SetTextVisibility(gameCompleteMessageText, false);
+            SetTextVisibility(gameOverMessageText, true);
+
+            // Play death music
+            musicManager.PlayDeathMusic();
+        }
+        else if (gameState == GameState.Complete)
+        {
+            SetTextVisibility(gameOverMessageText, false);
+            SetTextVisibility(mainMessageText, false);
+            SetTextVisibility(gameCompleteMessageText, true);
+
+            // Play death music
+            musicManager.PlayWinMusic();
+        }
+        else
+        {
+            SetTextVisibility(gameOverMessageText, false);
+            SetTextVisibility(gameCompleteMessageText, false);
+            SetTextVisibility(mainMessageText, true);
+
+            // Stop all music
+            musicManager.StopMusic();
+        }
+
+        // This is a bit nasty to have here, in theory there should be separate entities
+        // in the hierarchy and we just toggle their visibility, but for the sake of simplicity
+        // I'll stick to this solution
+        pressSpaceText.text = gameState != GameState.ToStart ? "Press SPACE to restart." : "Press SPACE to start.";
+    }
+
     System.Collections.IEnumerator FadeAndStart()
     {
-        gameStarted = true;
+        gameState = GameState.Started;
 
         float duration = 1f;
         float t = 0f;
@@ -65,5 +129,8 @@ public class StartScreenManager : MonoBehaviour
 
         startScreenPanel.SetActive(false);
         Time.timeScale = 1f;
+
+        // Start game music
+        musicManager.PlayGameMusic();
     }
 }

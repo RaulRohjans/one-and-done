@@ -7,10 +7,17 @@ public class Drop : MonoBehaviour
     private float maxFallSpeed = -3f;
     public DropType type;
 
+    private AudioSource audioSource;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         
+    }
+
+    void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -30,6 +37,10 @@ public class Drop : MonoBehaviour
 
         if (other.CompareTag("Player"))
         {
+            // Play the drop sound
+            if (audioSource != null && audioSource.clip != null)
+                AudioSource.PlayClipAtPoint(audioSource.clip, transform.position);
+
             other.GetComponent<MainCharacterScript>().Pickup(this);
             Destroy(gameObject);
         }
