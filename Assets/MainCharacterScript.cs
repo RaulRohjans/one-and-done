@@ -153,7 +153,7 @@ public class MainCharacterScript : MonoBehaviour
         // This should not be a hardcoded score limit
         // again these should be separated texts but for the sake
         // of simplicity I'll do it like this
-        carrotCounter.text = $"{score.ToString("D2")} / 50";
+        carrotCounter.text = $"{score.ToString("D2")} / 20";
     }
 
     public void Pickup(Drop drop)
@@ -163,7 +163,7 @@ public class MainCharacterScript : MonoBehaviour
             case DropType.Carrot:
                 IncrementGameScore();
 
-                if (score >= 50) screenManager.ShowStartScreen(GameState.Complete);
+                if (score >= 20) screenManager.ShowStartScreen(GameState.Complete);
                 break;
 
             case DropType.EvilCarrot:
