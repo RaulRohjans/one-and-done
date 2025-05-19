@@ -176,7 +176,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Billy wants to make a cake but needs to grab 50 carrots to do so.
+  m_text: 'Billy wants to make a cake but needs to grab 20 carrots to do so.
 
     Could
     you help him out?
