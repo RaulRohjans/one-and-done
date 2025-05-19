@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="Assets/MainCharacterScript.cs" />
     <Compile Include="Assets/Drop.cs" />
+    <Compile Include="Assets/StartScreenManager.cs" />
     <Compile Include="Assets/PlayerInputActions.cs" />
     <Compile Include="Assets/DropSpawner.cs" />
   </ItemGroup>
