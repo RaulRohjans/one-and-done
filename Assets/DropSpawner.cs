@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
-public class DropType
+public class ItemDrop
 {
     public GameObject prefab;
     public float weight;
@@ -11,7 +11,7 @@ public class DropType
 
 public class DropSpawner : MonoBehaviour
 {
-    public List<DropType> drops;
+    public List<ItemDrop> drops;
     private float spawnInterval = 2f;
 
     float timer;

@@ -1,8 +1,11 @@
 using UnityEngine;
 
+public enum DropType { Carrot, EvilCarrot, Shield, DoubleJump }
+
 public class Drop : MonoBehaviour
 {
     private float maxFallSpeed = -3f;
+    public DropType type;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -16,11 +19,18 @@ public class Drop : MonoBehaviour
         
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    void OnTriggerEnter2D(Collider2D other)
     {
-        // Remove object if it hits the ground
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        // Remove if it hits the ground
+        if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
+            Destroy(gameObject);
+            return;
+        }
+
+        if (other.CompareTag("Player"))
+        {
+            other.GetComponent<MainCharacterScript>().Pickup(this);
             Destroy(gameObject);
         }
     }
